@@ -24,6 +24,9 @@ namespace GuiaVegana.Entities
         public string Password { get; set; }
 
         [Required]
+        public bool IsActive { get; set; }
+
+        [Required]
         public Role Role { get; set; }
 
         // Navigation Properties

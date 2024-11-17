@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GuiaVegana.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class migracion3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,6 +20,7 @@ namespace GuiaVegana.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -34,10 +35,11 @@ namespace GuiaVegana.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Contact = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(700)", maxLength: 700, nullable: true),
+                    Contact = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SocialMediaUsername = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     SocialMediaLink = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -58,12 +60,14 @@ namespace GuiaVegana.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(700)", maxLength: 700, nullable: true),
                     SocialMediaUsername = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     SocialMediaLink = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Zone = table.Column<int>(type: "int", nullable: false),
                     Delivery = table.Column<int>(type: "int", nullable: false),
                     GlutenFree = table.Column<bool>(type: "bit", nullable: false),
+                    AllPlantBased = table.Column<bool>(type: "bit", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
                     BusinessType = table.Column<int>(type: "int", nullable: false),
                     LastUpdate = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -87,6 +91,7 @@ namespace GuiaVegana.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(700)", maxLength: 700, nullable: true),
                     Specialty = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     License = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     SocialMediaUsername = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -113,9 +118,10 @@ namespace GuiaVegana.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(700)", maxLength: 700, nullable: true),
                     Topic = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Platform = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Platform = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -160,7 +166,7 @@ namespace GuiaVegana.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Price = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", maxLength: 10, nullable: false),
                     BusinessId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

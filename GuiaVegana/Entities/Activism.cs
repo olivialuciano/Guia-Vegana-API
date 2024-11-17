@@ -13,15 +13,23 @@ namespace GuiaVegana.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
-        [MaxLength(50)]
+        [MaxLength(700)]
+        public string? Image { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string Contact { get; set; }
 
+        [Required]
         [MaxLength(50)]
         public string SocialMediaUsername { get; set; }
 
+        [Required]
         [Url]
         public string SocialMediaLink { get; set; }
 
+        [Required]
+        [MaxLength(500)]
         public string Description { get; set; }
 
         // Navigation Properties

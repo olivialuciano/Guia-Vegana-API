@@ -32,12 +32,17 @@ namespace GuiaVegana.Migrations
 
                     b.Property<string>("Contact")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(700)
+                        .HasColumnType("nvarchar(700)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -76,6 +81,9 @@ namespace GuiaVegana.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("AllPlantBased")
+                        .HasColumnType("bit");
+
                     b.Property<int>("BusinessType")
                         .HasColumnType("int");
 
@@ -84,6 +92,10 @@ namespace GuiaVegana.Migrations
 
                     b.Property<bool>("GlutenFree")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(700)
+                        .HasColumnType("nvarchar(700)");
 
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("datetime");
@@ -129,6 +141,10 @@ namespace GuiaVegana.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(700)
+                        .HasColumnType("nvarchar(700)");
 
                     b.Property<string>("License")
                         .IsRequired()
@@ -179,7 +195,12 @@ namespace GuiaVegana.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(700)
+                        .HasColumnType("nvarchar(700)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -188,8 +209,8 @@ namespace GuiaVegana.Migrations
 
                     b.Property<string>("Platform")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Topic")
                         .IsRequired()
@@ -251,6 +272,9 @@ namespace GuiaVegana.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -284,9 +308,9 @@ namespace GuiaVegana.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Price")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Price")
+                        .HasMaxLength(10)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

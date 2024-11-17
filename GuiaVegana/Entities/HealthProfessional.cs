@@ -13,10 +13,14 @@ namespace GuiaVegana.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
+        [MaxLength(700)]
+        public string? Image { get; set; }
+
         [Required]
         [MaxLength(50)]
         public string Specialty { get; set; }
 
+        [Required]
         [MaxLength(50)]
         public string License { get; set; }
 
@@ -26,6 +30,7 @@ namespace GuiaVegana.Entities
         [Url]
         public string SocialMediaLink { get; set; }
 
+        [Required]
         [MaxLength(15)]
         public string WhatsappNumber { get; set; }
 

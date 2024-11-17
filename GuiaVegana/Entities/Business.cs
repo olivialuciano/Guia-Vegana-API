@@ -13,6 +13,9 @@ namespace GuiaVegana.Entities
         [MaxLength(150)]
         public string Name { get; set; }
 
+        [MaxLength(700)]
+        public string? Image { get; set; }
+
         [MaxLength(50)]
         public string SocialMediaUsername { get; set; }
 
@@ -31,6 +34,9 @@ namespace GuiaVegana.Entities
 
         [Required]
         public bool GlutenFree { get; set; }
+
+        [Required]
+        public bool AllPlantBased { get; set; }
 
         [Required]
         public Rating Rating { get; set; }
@@ -59,7 +65,8 @@ namespace GuiaVegana.Entities
         Pichincha,
         Centro,
         Pellegrini,
-        Abasto
+        Abasto,
+        Sexta
     }
 
     public enum DeliveryType

@@ -13,8 +13,8 @@ namespace GuiaVegana.Entities
         [MaxLength(100)]
         public string Name { get; set; }
 
-        [Required]
-        public string Price { get; set; }
+        [MaxLength(10)]
+        public decimal Price { get; set; }
 
         // Navigation Properties
         public int BusinessId { get; set; }
