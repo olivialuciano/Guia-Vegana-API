@@ -1,6 +1,6 @@
 ﻿namespace GuiaVegana.Models
 {
-    public class ActivismToCreateDto
+    public class ActivismToCreateDTO
     {
         public string Name { get; set; }
         public string? Image { get; set; }

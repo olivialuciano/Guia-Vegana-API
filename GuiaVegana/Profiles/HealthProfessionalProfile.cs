@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using GuiaVegana.Entities;
+using GuiaVegana.Models;
 
 namespace GuiaVegana.Profiles
 {
@@ -6,7 +8,8 @@ namespace GuiaVegana.Profiles
     {
         public HealthProfessionalProfile()
         {
-
+            CreateMap<HealthProfessional, HealthProfessionalDTO>();
+            CreateMap<HealthProfessional, HealthProfessionalToCreateDTO>();
         }
     }
 }

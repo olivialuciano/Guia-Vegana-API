@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using GuiaVegana.Entities;
+using GuiaVegana.Models;
 
 namespace GuiaVegana.Profiles
 {
@@ -6,6 +8,8 @@ namespace GuiaVegana.Profiles
     {
         public BusinessProfile() 
         {
+            CreateMap<Business, BusinessDTO>();
+            CreateMap<Business, BusinessToCreateDTO>();
         
         }
     }
