@@ -6,6 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using AutoMapper;
+using GuiaVegana.Profiles;
+using GuiaVegana.Data.Repository.Interfaces;
+using GuiaVegana.Data.Repository.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,13 +17,12 @@ builder.Services.AddDbContext<GuiaVeganaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GuiaVeganaDBConnectionString")));
 
 // Add controllers and other services
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger/OpenAPI configuration
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setupAction =>
 {
-    //Esto va a permitir usar swagger con el token.
     setupAction.AddSecurityDefinition("GuiaVeganaBearerAuth", new OpenApiSecurityScheme()
     {
         Type = SecuritySchemeType.Http,
@@ -36,13 +38,17 @@ builder.Services.AddSwaggerGen(setupAction =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "GuiaVeganaBearerAuth" }
-                }, new List<string>() }
+                    Id = "GuiaVeganaBearerAuth"
+                }
+            },
+            new List<string>()
+        }
     });
 });
 
-builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntenticacion que tenemos que elegir despues en PostMan para pasarle el token
-    .AddJwtBearer(options => //Aca definimos la configuracion de la autenticacion. le decimos que cosas queremos comprobar. La fecha de expiracion se valida por defecto.
+// Configure authentication
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new()
         {
@@ -51,55 +57,43 @@ builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntentica
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Authentication:Issuer"],
             ValidAudience = builder.Configuration["Authentication:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"]))
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"])
+            )
         };
 
-
-        /////////////////////////////////aca para agregar el rol de usuario para poder ver luego de agarrarlo del front /////////////
+        // Add role claims from token
         options.Events = new JwtBearerEvents
         {
             OnTokenValidated = context =>
             {
-                // Agregar el rol como claim adicional al principal del usuario
                 var identity = context.Principal.Identity as ClaimsIdentity;
                 if (identity != null)
                 {
                     var roleClaim = context.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
                     if (roleClaim != null)
                     {
-                        // Obtener el rol del token y agregarlo como claim adicional
-                        var role = roleClaim.Value;
-                        identity.AddClaim(new Claim(ClaimTypes.Role, role));
+                        identity.AddClaim(new Claim(ClaimTypes.Role, roleClaim.Value));
                     }
                 }
-
                 return Task.CompletedTask;
             }
         };
-        //////////////////////////////////////////////////
+    });
 
-    }
-);
+// Register AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-
-var config = new MapperConfiguration(cfg =>
-{
-    cfg.AddProfile(new UserProfile());
-    cfg.AddProfile(new BusinessProfile());
-    cfg.AddProfile(new HealthProfessionalProfile());
-    cfg.AddProfile(new InformativeResourceProfile());
-    cfg.AddProfile(new ActivismProfile());
-});
-
-var mapper = config.CreateMapper();
-
+// Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IHealthProfessionalRepository, HealthProfessionalRepository>();
 builder.Services.AddScoped<IInformativeResourceRepository, InformativeResourceRepository>();
 builder.Services.AddScoped<IActivismRepository, ActivismRepository>();
+builder.Services.AddScoped<IOpeningHourRepository, OpeningHourRepository>();
+builder.Services.AddScoped<IVeganOptionRepository, VeganOptionRepository>();
 
-
+// Enable CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -110,19 +104,18 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
