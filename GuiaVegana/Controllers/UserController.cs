@@ -5,6 +5,10 @@ using GuiaVegana.Models;
 using GuiaVegana.Repositories;
 using GuiaVegana.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace GuiaVegana.Controllers
 {
@@ -14,11 +18,13 @@ namespace GuiaVegana.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
 
-        public UserController(IUserRepository userRepository, IMapper mapper)
+        public UserController(IUserRepository userRepository, IMapper mapper, IConfiguration config)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _config = config;
         }
 
         // GET: api/User/{id}
@@ -78,22 +84,34 @@ namespace GuiaVegana.Controllers
         }
 
         // POST: api/User/validate
-        [HttpPost("validate")]
-        public IActionResult ValidateUser([FromBody] AuthenticationRequestBody authenticationRequest)
+        [HttpPost("authorization")] //es el login, el usuario inicia sesión.
+        public ActionResult<string> AutenticateUser(AuthenticationRequestBody authenticationRequestBody)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { Message = "Invalid request data." });
-            }
+            //Validamos las credenciales
+            var user = _userRepository.ValidateUser(authenticationRequestBody);
+            if (user is null)
+                return Unauthorized();
 
-            var user = _userRepository.ValidateUser(authenticationRequest.Email!, authenticationRequest.Password!);
-            if (user == null)
-            {
-                return Unauthorized(new { Message = "Invalid email or password." });
-            }
+            //Creación el token
+            var securityPassword = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]));
+            var credentials = new SigningCredentials(securityPassword, SecurityAlgorithms.HmacSha256);
+            
+            var claimsForToken = new List<Claim>();
+            claimsForToken.Add(new Claim("role", user.Role.ToString())); //agregamos el rol como claim para agarrarlo luegoen le front.
 
-            var userDto = _mapper.Map<UserDTO>(user);
-            return Ok(userDto);
+            var jwtSecurityToken = new JwtSecurityToken(
+             _config["Authentication:Issuer"],
+             _config["Authentication:Audience"],
+             claimsForToken,
+             DateTime.UtcNow,
+             DateTime.UtcNow.AddHours(1),
+             credentials);
+
+            var tokenToReturn = new JwtSecurityTokenHandler() //Pasamos el token a string
+                .WriteToken(jwtSecurityToken);
+
+            return Ok(tokenToReturn);
+
         }
 
         // PUT: api/User

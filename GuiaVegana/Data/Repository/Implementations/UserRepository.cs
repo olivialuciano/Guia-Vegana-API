@@ -46,14 +46,13 @@ namespace GuiaVegana.Data.Repository.Implementations
                 _context.SaveChanges();
             }
 
-            public User ValidateUser(string email, string password)
-            {
-                return _context.Users
-                    .FirstOrDefault(u => u.Email == email && u.Password == password && u.IsActive);
-            }
+        public User? ValidateUser(AuthenticationRequestBody authRequestBody)
+        {
+            return _context.Users.FirstOrDefault(p => p.Email == authRequestBody.Email && p.Password == authRequestBody.Password);
+        }
 
-            // Métodos PUT
-            public void UpdateUser(User user)
+        // Métodos PUT
+        public void UpdateUser(User user)
             {
                 var existingUser = _context.Users.FirstOrDefault(u => u.Id == user.Id);
                 if (existingUser != null)

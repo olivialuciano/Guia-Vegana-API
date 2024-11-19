@@ -1,4 +1,5 @@
 ﻿using GuiaVegana.Entities;
+using GuiaVegana.Models;
 using System.Collections.Generic;
 
 namespace GuiaVegana.Repositories.Interfaces
@@ -13,7 +14,7 @@ namespace GuiaVegana.Repositories.Interfaces
 
         // Métodos POST
         void AddUser(User user);
-        User ValidateUser(string email, string password);
+        User ValidateUser(AuthenticationRequestBody authRequestBody);
 
         // Métodos PUT
         void UpdateUser(User user);
