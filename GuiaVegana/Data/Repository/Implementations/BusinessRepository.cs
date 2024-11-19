@@ -2,6 +2,8 @@
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GuiaVegana.Data.Repository.Implementations
@@ -10,11 +12,13 @@ namespace GuiaVegana.Data.Repository.Implementations
     {
         private GuiaVeganaContext _context;
         private readonly IMapper _mapper;
+
         public BusinessRepository(GuiaVeganaContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
+
         // Métodos GET
 
         // 1. Traer todos los negocios
@@ -74,9 +78,14 @@ namespace GuiaVegana.Data.Repository.Implementations
             return _context.Businesses
                 .Include(b => b.OpeningHours)
                 .Where(b => b.OpeningHours.Any(oh =>
-                    oh.DayOfWeek == currentTime.DayOfWeek &&
-                    oh.OpenTime <= currentTime.TimeOfDay &&
-                    oh.CloseTime >= currentTime.TimeOfDay))
+                    (oh.Day == currentTime.DayOfWeek &&
+                     oh.OpenTime1 <= currentTime.TimeOfDay &&
+                     oh.CloseTime1 >= currentTime.TimeOfDay) ||
+                    (oh.Day == currentTime.DayOfWeek &&
+                     oh.OpenTime2.HasValue &&
+                     oh.CloseTime2.HasValue &&
+                     oh.OpenTime2.Value <= currentTime.TimeOfDay &&
+                     oh.CloseTime2.Value >= currentTime.TimeOfDay)))
                 .ToList();
         }
 
@@ -111,5 +120,4 @@ namespace GuiaVegana.Data.Repository.Implementations
             }
         }
     }
-}
 }
