@@ -10,6 +10,7 @@ using GuiaVegana.Profiles;
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Data.Repository.Implementations;
 using GuiaVegana.Repositories;
+using GuiaVegana.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

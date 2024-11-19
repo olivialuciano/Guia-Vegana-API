@@ -3,6 +3,7 @@ using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Entities;
 using GuiaVegana.Models;
 using GuiaVegana.Repositories;
+using GuiaVegana.Repositories.Interfaces;
 using System;
 
 namespace GuiaVegana.Data.Repository.Implementations
