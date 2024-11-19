@@ -1,26 +1,24 @@
 ﻿using GuiaVegana.Entities;
-using GuiaVegana.Models;
+using System.Collections.Generic;
 
-namespace GuiaVegana.Data.Repository.Interfaces
+namespace GuiaVegana.Repositories
 {
     public interface IUserRepository
     {
-        // GET
-        User? GetById(int userId); // Obtener un usuario por ID
-        List<User> GetAll(); // Obtener todos los usuarios
-        List<User> GetAllActive(); // Obtener solo usuarios activos
-        List<User> GetAllInactive(); // Obtener solo usuarios inactivos
+        // Métodos GET
+        User GetUserById(int id);
+        IEnumerable<User> GetAllUsers();
+        IEnumerable<User> GetActiveUsers();
+        IEnumerable<User> GetInactiveUsers();
 
-        // POST (Sólo el Sysadmin puede crear un usuario)
-        User AddUser(User user); // Agregar un nuevo usuario (solo Sysadmin)
+        // Métodos POST
+        void AddUser(User user);
+        User ValidateUser(string email, string password);
 
-        // PUT
-        void UpdateUserData(User user); // Actualizar los datos de un usuario
-        void UpdatePassword(int userId, string newPassword); // Cambiar la contraseña de un usuario
-
-        // DELETE (Soft delete: desactivar usuarios)
-        void DeactivateUser(int userId); // Desactivar un usuario (marcar como inactivo)
-        void ReactivateUser(int userId); // Reactivar un usuario (marcar como activo)
-
+        // Métodos PUT
+        void UpdateUser(User user);
+        void UpdatePassword(int userId, string newPassword);
+        void ActivateUser(int userId);
+        void InactivateUser(int userId);
     }
 }
