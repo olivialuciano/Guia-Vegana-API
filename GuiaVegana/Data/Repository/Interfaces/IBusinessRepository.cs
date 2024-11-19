@@ -2,7 +2,7 @@
 
 namespace GuiaVegana.Data.Repository.Interfaces
 {
-    public class IBusinessRepository
+    public interface IBusinessRepository
     {
         // Métodos GET
         IEnumerable<Business> GetAllBusinesses();
