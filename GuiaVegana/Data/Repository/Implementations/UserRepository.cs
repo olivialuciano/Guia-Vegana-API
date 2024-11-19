@@ -80,7 +80,6 @@ namespace GuiaVegana.Data.Repository.Implementations
                 userItem.Password = user.Password;
                 userItem.Role = user.Role;
                 userItem.IsActive = user.IsActive; // Se permite modificar el estado de IsActive
-                userItem.Image = user.Image;
 
                 _context.SaveChanges();
             }
