@@ -27,10 +27,20 @@ namespace GuiaVegana.Entities
         [MaxLength(500)]
         public string Description { get; set; }
 
+        [Required]
+        public ResourceType Type { get; set; } // Enum property
+
+
         // Navigation Properties
         public int UserId { get; set; }
 
         [ForeignKey("UserId")]
         public User User { get; set; }
     }
+}
+public enum ResourceType
+{
+    Book,
+    Documentary,
+    WebResource
 }

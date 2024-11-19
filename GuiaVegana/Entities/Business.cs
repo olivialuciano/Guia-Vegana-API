@@ -64,9 +64,13 @@ namespace GuiaVegana.Entities
         Oeste,
         Pichincha,
         Centro,
+        Martin,
         Pellegrini,
+        Oroño,
         Abasto,
-        Sexta
+        Sexta,
+        Echesortu,
+        Lourdes
     }
 
     public enum DeliveryType
@@ -92,7 +96,8 @@ namespace GuiaVegana.Entities
         BarRestaurante,
         Panaderia,
         Heladeria,
-        MercadoDietetica
+        MercadoDietetica,
+        Emprendimiento
     }
 
 }
