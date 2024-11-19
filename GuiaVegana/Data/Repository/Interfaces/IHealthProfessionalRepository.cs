@@ -1,6 +1,6 @@
 ﻿namespace GuiaVegana.Data.Repository.Interfaces
 {
-    public class IHealthProfessionalRepository
+    public interface IHealthProfessionalRepository
     {
     }
 }

@@ -9,6 +9,7 @@ using AutoMapper;
 using GuiaVegana.Profiles;
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Data.Repository.Implementations;
+using GuiaVegana.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

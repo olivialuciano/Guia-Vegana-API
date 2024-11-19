@@ -1,7 +1,7 @@
 ﻿using GuiaVegana.Entities;
 using System.Collections.Generic;
 
-namespace GuiaVegana.Repositories
+namespace GuiaVegana.Repositories.Interfaces
 {
     public interface IUserRepository
     {
