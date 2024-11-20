@@ -1,22 +1,62 @@
-﻿using GuiaVegana.Data;
+﻿using AutoMapper;
 using GuiaVegana.Data.Repository.Interfaces;
+using GuiaVegana.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuiaVegana.Controllers
 {
-    [Route("api/Activismos")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ActivismController : ControllerBase
     {
-        private readonly IActivismRepository _activismRepository;
-        //ir poniendo cada que necesito el repository de cada entidad.
-        private GuiaVeganaContext _context;
-        public ActivismController(IActivismRepository activismRepository, GuiaVeganaContext context)
+        private readonly IActivismRepository _repository;
+
+        public ActivismController(IActivismRepository repository)
         {
-            _activismRepository = activismRepository;
-            _context = context;
+            _repository = repository;
         }
 
+        // GET: api/Activism
+        [HttpGet]
+        public ActionResult<IEnumerable<ActivismDTO>> GetAll()
+        {
+            var activisms = _repository.GetAll();
+            return Ok(activisms);
+        }
 
+        // GET: api/Activism/{id}
+        [HttpGet("{id}")]
+        public ActionResult<ActivismDTO> GetById(int id)
+        {
+            var activism = _repository.GetById(id);
+            if (activism == null)
+                return NotFound();
+
+            return Ok(activism);
+        }
+
+        // POST: api/Activism
+        [HttpPost]
+        public IActionResult Add([FromBody] ActivismToCreateDTO activismToCreate)
+        {
+            _repository.Add(activismToCreate);
+            return CreatedAtAction(nameof(GetById), new { id = activismToCreate }, activismToCreate);
+        }
+
+        // PUT: api/Activism/{id}
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] ActivismToCreateDTO activismToUpdate)
+        {
+            _repository.Update(id, activismToUpdate);
+            return NoContent();
+        }
+
+        // DELETE: api/Activism/{id}
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            _repository.Delete(id);
+            return NoContent();
+        }
     }
 }
