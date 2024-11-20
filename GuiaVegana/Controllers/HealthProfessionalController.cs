@@ -1,12 +1,62 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using GuiaVegana.Data.Repository.Interfaces;
+using GuiaVegana.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GuiaVegana.Controllers
 {
-    public class HealthProfessionalController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class HealthProfessionalController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly IHealthProfessionalRepository _repository;
+
+        public HealthProfessionalController(IHealthProfessionalRepository repository)
         {
-            return View();
+            _repository = repository;
+        }
+
+        // GET: api/HealthProfessional
+        [HttpGet]
+        public ActionResult<IEnumerable<HealthProfessionalDTO>> GetAll()
+        {
+            var professionals = _repository.GetAll();
+            return Ok(professionals);
+        }
+
+        // GET: api/HealthProfessional/{id}
+        [HttpGet("{id}")]
+        public ActionResult<HealthProfessionalDTO> GetById(int id)
+        {
+            var professional = _repository.GetById(id);
+            if (professional == null)
+                return NotFound();
+
+            return Ok(professional);
+        }
+
+        // POST: api/HealthProfessional
+        [HttpPost]
+        public IActionResult Add([FromBody] HealthProfessionalToCreateDTO professionalToCreate)
+        {
+            _repository.Add(professionalToCreate);
+            return CreatedAtAction(nameof(GetById), new { id = professionalToCreate }, professionalToCreate);
+        }
+
+        // PUT: api/HealthProfessional/{id}
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] HealthProfessionalToCreateDTO professionalToUpdate)
+        {
+            _repository.Update(id, professionalToUpdate);
+            return NoContent();
+        }
+
+        // DELETE: api/HealthProfessional/{id}
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            _repository.Delete(id);
+            return NoContent();
         }
     }
 }
