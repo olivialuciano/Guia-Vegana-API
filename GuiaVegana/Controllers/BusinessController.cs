@@ -98,7 +98,7 @@ namespace GuiaVegana.Controllers
 
         // POST: api/Business
         [HttpPost]
-        [Authorize(Roles = "Sysadmin,Investigador")
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult CreateBusiness([FromBody] BusinessToCreateDTO businessToCreateDto)
         {
             if (!ModelState.IsValid)
