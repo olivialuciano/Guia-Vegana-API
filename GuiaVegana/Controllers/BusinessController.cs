@@ -2,6 +2,7 @@
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Entities;
 using GuiaVegana.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuiaVegana.Controllers
@@ -97,6 +98,7 @@ namespace GuiaVegana.Controllers
 
         // POST: api/Business
         [HttpPost]
+        [Authorize(Roles = "Sysadmin,Investigador")
         public IActionResult CreateBusiness([FromBody] BusinessToCreateDTO businessToCreateDto)
         {
             if (!ModelState.IsValid)
@@ -113,6 +115,7 @@ namespace GuiaVegana.Controllers
 
         // PUT: api/Business
         [HttpPut]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult UpdateBusiness([FromBody] BusinessDTO businessDto)
         {
             if (!ModelState.IsValid)
@@ -128,6 +131,7 @@ namespace GuiaVegana.Controllers
 
         // DELETE: api/Business/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult DeleteBusiness(int id)
         {
             var business = _businessRepository.GetBusinessById(id);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GuiaVegana.Controllers
 {
@@ -17,14 +18,29 @@ namespace GuiaVegana.Controllers
 
         // GET: api/veganoption
         [HttpGet]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult GetAllVeganOptions()
         {
             var veganOptions = _veganOptionRepository.GetAll();
             return Ok(veganOptions);
         }
 
+        // GET: api/veganoption/business/{businessId}
+        [HttpGet("business/{businessId}")]
+        public IActionResult GetVeganOptionsByBusinessId(int businessId)
+        {
+            var veganOptions = _veganOptionRepository.GetAllByBusinessId(businessId);
+            if (veganOptions == null || !veganOptions.Any())
+            {
+                return NotFound($"No vegan options found for business ID {businessId}.");
+            }
+            return Ok(veganOptions);
+        }
+
+
         // GET: api/veganoption/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult GetVeganOptionById(int id)
         {
             var veganOption = _veganOptionRepository.GetById(id);
@@ -37,6 +53,7 @@ namespace GuiaVegana.Controllers
 
         // POST: api/veganoption
         [HttpPost]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult AddVeganOption([FromBody] VeganOptionToCreateDTO veganOptionToCreate)
         {
             if (veganOptionToCreate == null)
@@ -50,6 +67,7 @@ namespace GuiaVegana.Controllers
 
         // PUT: api/veganoption/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult UpdateVeganOption(int id, [FromBody] VeganOptionToCreateDTO veganOptionToUpdate)
         {
             if (veganOptionToUpdate == null)
@@ -69,6 +87,7 @@ namespace GuiaVegana.Controllers
 
         // DELETE: api/veganoption/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult DeleteVeganOption(int id)
         {
             var existingOption = _veganOptionRepository.GetById(id);

@@ -23,6 +23,13 @@ namespace GuiaVegana.Data.Repository.Implementations
             return _mapper.Map<IEnumerable<OpeningHourDTO>>(openingHours);
         }
 
+        // GET: Get all opening hours for a specific business
+        public IEnumerable<OpeningHourDTO> GetAllByBusinessId(int businessId)
+        {
+            var openingHours = _context.OpeningHours.Where(oh => oh.BusinessId == businessId).ToList();
+            return _mapper.Map<IEnumerable<OpeningHourDTO>>(openingHours);
+        }
+
         // GET: Get opening hour by ID
         public OpeningHourDTO GetById(int id)
         {

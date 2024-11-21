@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GuiaVegana.Controllers
 {
@@ -17,14 +18,28 @@ namespace GuiaVegana.Controllers
 
         // GET: api/openinghour
         [HttpGet]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult GetAllOpeningHours()
         {
             var openingHours = _openingHourRepository.GetAll();
             return Ok(openingHours);
         }
 
+        // GET: api/openinghour/business/{businessId}
+        [HttpGet("business/{businessId}")]
+        public IActionResult GetOpeningHoursByBusinessId(int businessId)
+        {
+            var openingHours = _openingHourRepository.GetAllByBusinessId(businessId);
+            if (openingHours == null || !openingHours.Any())
+            {
+                return NotFound($"No opening hours found for business ID {businessId}.");
+            }
+            return Ok(openingHours);
+        }
+
         // GET: api/openinghour/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult GetOpeningHourById(int id)
         {
             var openingHour = _openingHourRepository.GetById(id);
@@ -37,6 +52,7 @@ namespace GuiaVegana.Controllers
 
         // POST: api/openinghour
         [HttpPost]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult AddOpeningHour([FromBody] OpeningHourToCreateDTO openingHourToCreate)
         {
             if (openingHourToCreate == null)
@@ -50,6 +66,7 @@ namespace GuiaVegana.Controllers
 
         // PUT: api/openinghour/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult UpdateOpeningHour(int id, [FromBody] OpeningHourToCreateDTO openingHourToUpdate)
         {
             if (openingHourToUpdate == null)
@@ -69,6 +86,7 @@ namespace GuiaVegana.Controllers
 
         // DELETE: api/openinghour/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult DeleteOpeningHour(int id)
         {
             var existingOpeningHour = _openingHourRepository.GetById(id);

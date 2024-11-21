@@ -23,6 +23,12 @@ namespace GuiaVegana.Data.Repository.Implementations
             return _context.VeganOptions.ToList();
         }
 
+        // GET: Get all vegan options for a specific business
+        public IEnumerable<VeganOption> GetAllByBusinessId(int businessId)
+        {
+            return _context.VeganOptions.Where(vo => vo.BusinessId == businessId).ToList();
+        }
+
         // Get a vegan option by ID
         public VeganOption GetById(int id)
         {

@@ -4,6 +4,7 @@ using GuiaVegana.Entities;
 using GuiaVegana.Models;
 using GuiaVegana.Repositories;
 using GuiaVegana.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -29,6 +30,7 @@ namespace GuiaVegana.Controllers
 
         // GET: api/User/{id}
         [HttpGet("{id}")]
+        [Authorize(Roles = "Sysadmin")]
         public IActionResult GetUserById(int id)
         {
             var user = _userRepository.GetUserById(id);
@@ -42,6 +44,7 @@ namespace GuiaVegana.Controllers
 
         // GET: api/User
         [HttpGet]
+        [Authorize(Roles = "Sysadmin")]
         public IActionResult GetAllUsers()
         {
             var users = _userRepository.GetAllUsers();
@@ -51,6 +54,7 @@ namespace GuiaVegana.Controllers
 
         // GET: api/User/active
         [HttpGet("active")]
+        [Authorize(Roles = "Sysadmin")]
         public IActionResult GetActiveUsers()
         {
             var users = _userRepository.GetActiveUsers();
@@ -60,6 +64,7 @@ namespace GuiaVegana.Controllers
 
         // GET: api/User/inactive
         [HttpGet("inactive")]
+        [Authorize(Roles = "Sysadmin")]
         public IActionResult GetInactiveUsers()
         {
             var users = _userRepository.GetInactiveUsers();
@@ -69,6 +74,7 @@ namespace GuiaVegana.Controllers
 
         // POST: api/User
         [HttpPost]
+        [Authorize(Roles = "Sysadmin")]
         public IActionResult CreateUser([FromBody] UserToCreateDTO userToCreateDto)
         {
             if (!ModelState.IsValid)
@@ -116,6 +122,7 @@ namespace GuiaVegana.Controllers
 
         // PUT: api/User
         [HttpPut]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult UpdateUser([FromBody] UserDTO userDto)
         {
             if (!ModelState.IsValid)
@@ -131,6 +138,7 @@ namespace GuiaVegana.Controllers
 
         // PUT: api/User/password
         [HttpPut("password")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult UpdatePassword(int userId, [FromBody] string newPassword)
         {
             if (string.IsNullOrWhiteSpace(newPassword))
@@ -144,6 +152,7 @@ namespace GuiaVegana.Controllers
 
         // PUT: api/User/activate/{id}
         [HttpPut("activate/{id}")]
+        [Authorize(Roles = "Sysadmin")]
         public IActionResult ActivateUser(int id)
         {
             _userRepository.ActivateUser(id);
@@ -152,6 +161,7 @@ namespace GuiaVegana.Controllers
 
         // PUT: api/User/inactivate/{id}
         [HttpPut("inactivate/{id}")]
+        [Authorize(Roles = "Sysadmin")]
         public IActionResult InactivateUser(int id)
         {
             _userRepository.InactivateUser(id);

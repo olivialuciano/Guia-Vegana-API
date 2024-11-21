@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuiaVegana.Controllers
@@ -37,6 +38,7 @@ namespace GuiaVegana.Controllers
 
         // POST: api/Activism
         [HttpPost]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult Add([FromBody] ActivismToCreateDTO activismToCreate)
         {
             _repository.Add(activismToCreate);
@@ -45,6 +47,7 @@ namespace GuiaVegana.Controllers
 
         // PUT: api/Activism/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult Update(int id, [FromBody] ActivismToCreateDTO activismToUpdate)
         {
             _repository.Update(id, activismToUpdate);
@@ -53,6 +56,7 @@ namespace GuiaVegana.Controllers
 
         // DELETE: api/Activism/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult Delete(int id)
         {
             _repository.Delete(id);
