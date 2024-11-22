@@ -2,6 +2,7 @@
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Models;
 using Microsoft.AspNetCore.Authorization;
+using GuiaVegana.Entities;
 
 namespace GuiaVegana.Controllers
 {
@@ -21,34 +22,54 @@ namespace GuiaVegana.Controllers
         [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult GetAllVeganOptions()
         {
-            var veganOptions = _veganOptionRepository.GetAll();
-            return Ok(veganOptions);
+            try
+            {
+                var veganOptions = _veganOptionRepository.GetAll();
+                return Ok(veganOptions);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         // GET: api/veganoption/business/{businessId}
         [HttpGet("business/{businessId}")]
         public IActionResult GetVeganOptionsByBusinessId(int businessId)
         {
-            var veganOptions = _veganOptionRepository.GetAllByBusinessId(businessId);
-            if (veganOptions == null || !veganOptions.Any())
+            try
             {
-                return NotFound($"No vegan options found for business ID {businessId}.");
+                var veganOptions = _veganOptionRepository.GetAllByBusinessId(businessId);
+                if (veganOptions == null || !veganOptions.Any())
+                {
+                    return NotFound($"No vegan options found for business ID {businessId}.");
+                }
+                return Ok(veganOptions);
             }
-            return Ok(veganOptions);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
-
 
         // GET: api/veganoption/{id}
         [HttpGet("{id}")]
         [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult GetVeganOptionById(int id)
         {
-            var veganOption = _veganOptionRepository.GetById(id);
-            if (veganOption == null)
+            try
             {
-                return NotFound($"Vegan option with ID {id} was not found.");
+                var veganOption = _veganOptionRepository.GetById(id);
+                if (veganOption == null)
+                {
+                    return NotFound($"Vegan option with ID {id} was not found.");
+                }
+                return Ok(veganOption);
             }
-            return Ok(veganOption);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         // POST: api/veganoption
@@ -61,8 +82,15 @@ namespace GuiaVegana.Controllers
                 return BadRequest("Vegan option data is required.");
             }
 
-            _veganOptionRepository.Add(veganOptionToCreate);
-            return CreatedAtAction(nameof(GetVeganOptionById), new { id = veganOptionToCreate.BusinessId }, veganOptionToCreate);
+            try
+            {
+                _veganOptionRepository.Add(veganOptionToCreate);
+                return Ok(veganOptionToCreate);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         // PUT: api/veganoption/{id}
@@ -75,14 +103,19 @@ namespace GuiaVegana.Controllers
                 return BadRequest("Vegan option data is required.");
             }
 
-            var existingOption = _veganOptionRepository.GetById(id);
-            if (existingOption == null)
+            try
             {
-                return NotFound($"Vegan option with ID {id} was not found.");
+                _veganOptionRepository.Update(id, veganOptionToUpdate);
+                return NoContent();
             }
-
-            _veganOptionRepository.Update(id, veganOptionToUpdate);
-            return NoContent();
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         // DELETE: api/veganoption/{id}
@@ -90,14 +123,19 @@ namespace GuiaVegana.Controllers
         [Authorize(Roles = "Sysadmin,Investigador")]
         public IActionResult DeleteVeganOption(int id)
         {
-            var existingOption = _veganOptionRepository.GetById(id);
-            if (existingOption == null)
+            try
             {
-                return NotFound($"Vegan option with ID {id} was not found.");
+                _veganOptionRepository.Delete(id);
+                return NoContent();
             }
-
-            _veganOptionRepository.Delete(id);
-            return NoContent();
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

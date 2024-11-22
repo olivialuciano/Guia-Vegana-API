@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using GuiaVegana.Data.Repository.Interfaces;
+﻿using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Entities;
 using GuiaVegana.Models;
 
@@ -8,32 +7,68 @@ namespace GuiaVegana.Data.Repository.Implementations
     public class HealthProfessionalRepository : IHealthProfessionalRepository
     {
         private readonly GuiaVeganaContext _context;
-        private readonly IMapper _mapper;
 
-        public HealthProfessionalRepository(GuiaVeganaContext context, IMapper mapper)
+        public HealthProfessionalRepository(GuiaVeganaContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         // GET: Get all health professionals
         public IEnumerable<HealthProfessionalDTO> GetAll()
         {
             var professionals = _context.HealthProfessionals.ToList();
-            return _mapper.Map<IEnumerable<HealthProfessionalDTO>>(professionals);
+            return professionals.Select(p => new HealthProfessionalDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Image = p.Image,
+                Specialty = p.Specialty,
+                License = p.License,
+                SocialMediaUsername = p.SocialMediaUsername,
+                SocialMediaLink = p.SocialMediaLink,
+                WhatsappNumber = p.WhatsappNumber,
+                Email = p.Email,
+                UserId = p.UserId
+            }).ToList();
         }
 
         // GET: Get health professional by ID
         public HealthProfessionalDTO GetById(int id)
         {
             var professional = _context.HealthProfessionals.FirstOrDefault(p => p.Id == id);
-            return _mapper.Map<HealthProfessionalDTO>(professional);
+            if (professional == null) return null;
+
+            return new HealthProfessionalDTO
+            {
+                Id = professional.Id,
+                Name = professional.Name,
+                Image = professional.Image,
+                Specialty = professional.Specialty,
+                License = professional.License,
+                SocialMediaUsername = professional.SocialMediaUsername,
+                SocialMediaLink = professional.SocialMediaLink,
+                WhatsappNumber = professional.WhatsappNumber,
+                Email = professional.Email,
+                UserId = professional.UserId
+            };
         }
 
         // POST: Add a new health professional
         public void Add(HealthProfessionalToCreateDTO healthProfessionalToCreate)
         {
-            var professional = _mapper.Map<HealthProfessional>(healthProfessionalToCreate);
+            var professional = new HealthProfessional
+            {
+                Name = healthProfessionalToCreate.Name,
+                Image = healthProfessionalToCreate.Image,
+                Specialty = healthProfessionalToCreate.Specialty,
+                License = healthProfessionalToCreate.License,
+                SocialMediaUsername = healthProfessionalToCreate.SocialMediaUsername,
+                SocialMediaLink = healthProfessionalToCreate.SocialMediaLink,
+                WhatsappNumber = healthProfessionalToCreate.WhatsappNumber,
+                Email = healthProfessionalToCreate.Email,
+                UserId = healthProfessionalToCreate.UserId
+            };
+
             _context.HealthProfessionals.Add(professional);
             _context.SaveChanges();
         }
@@ -42,22 +77,35 @@ namespace GuiaVegana.Data.Repository.Implementations
         public void Update(int id, HealthProfessionalToCreateDTO healthProfessionalToUpdate)
         {
             var existingProfessional = _context.HealthProfessionals.FirstOrDefault(p => p.Id == id);
-            if (existingProfessional != null)
+            if (existingProfessional == null)
             {
-                _mapper.Map(healthProfessionalToUpdate, existingProfessional);
-                _context.SaveChanges();
+                throw new KeyNotFoundException($"No se encontró un profesional de salud con ID {id}.");
             }
+
+            existingProfessional.Name = healthProfessionalToUpdate.Name;
+            existingProfessional.Image = healthProfessionalToUpdate.Image;
+            existingProfessional.Specialty = healthProfessionalToUpdate.Specialty;
+            existingProfessional.License = healthProfessionalToUpdate.License;
+            existingProfessional.SocialMediaUsername = healthProfessionalToUpdate.SocialMediaUsername;
+            existingProfessional.SocialMediaLink = healthProfessionalToUpdate.SocialMediaLink;
+            existingProfessional.WhatsappNumber = healthProfessionalToUpdate.WhatsappNumber;
+            existingProfessional.Email = healthProfessionalToUpdate.Email;
+            existingProfessional.UserId = healthProfessionalToUpdate.UserId;
+
+            _context.SaveChanges();
         }
 
         // DELETE: Remove a health professional by ID
         public void Delete(int id)
         {
             var professional = _context.HealthProfessionals.FirstOrDefault(p => p.Id == id);
-            if (professional != null)
+            if (professional == null)
             {
-                _context.HealthProfessionals.Remove(professional);
-                _context.SaveChanges();
+                throw new KeyNotFoundException($"No se encontró un profesional de salud con ID {id}.");
             }
+
+            _context.HealthProfessionals.Remove(professional);
+            _context.SaveChanges();
         }
     }
 }

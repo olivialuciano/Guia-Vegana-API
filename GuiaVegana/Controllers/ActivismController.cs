@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using GuiaVegana.Data.Repository.Interfaces;
+﻿using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

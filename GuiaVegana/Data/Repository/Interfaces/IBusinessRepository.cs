@@ -1,27 +1,23 @@
 ﻿using GuiaVegana.Entities;
+using GuiaVegana.Models;
+using System;
+using System.Collections.Generic;
 
 namespace GuiaVegana.Data.Repository.Interfaces
 {
     public interface IBusinessRepository
     {
         // Métodos GET
-        IEnumerable<Business> GetAllBusinesses();
-        Business GetBusinessById(int id);
-        IEnumerable<Business> GetBusinessesByRatings(IEnumerable<Rating> ratings);
-        IEnumerable<Business> GetBusinessesByDeliveries(IEnumerable<DeliveryType> deliveries);
-        IEnumerable<Business> GetBusinessesByTypes(IEnumerable<BusinessType> businessTypes);
-        IEnumerable<Business> GetBusinessesByZones(IEnumerable<Zone> zones);
-        IEnumerable<Business> GetPlantBasedBusinesses();
-        IEnumerable<Business> GetGlutenFreeBusinesses();
-        IEnumerable<Business> GetBusinessesOpenAt(DateTime currentTime);
+        IEnumerable<BusinessDTO> GetAllBusinesses(); // Obtener todos los negocios
+        BusinessDTO GetBusinessById(int id); // Obtener un negocio por ID
 
         // Métodos POST
-        void AddBusiness(Business business);
+        void AddBusiness(BusinessToCreateDTO businessDTO); // Agregar un nuevo negocio
 
         // Métodos PUT
-        void UpdateBusiness(Business business);
+        void UpdateBusiness(BusinessDTO businessDTO); // Actualizar un negocio existente
 
         // Métodos DELETE
-        void DeleteBusiness(int id);
+        void DeleteBusiness(int id); // Eliminar un negocio por ID
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using GuiaVegana.Data.Repository.Interfaces;
+﻿using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Entities;
 using GuiaVegana.Models;
 using GuiaVegana.Repositories;
@@ -11,11 +10,9 @@ namespace GuiaVegana.Data.Repository.Implementations
     public class UserRepository : IUserRepository
     {
         private GuiaVeganaContext _context;
-        private readonly IMapper _mapper;
-        public UserRepository(GuiaVeganaContext context, IMapper mapper)
+        public UserRepository(GuiaVeganaContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
             // Métodos GET

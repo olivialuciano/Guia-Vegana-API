@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using GuiaVegana.Data.Repository.Interfaces;
+﻿using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Entities;
 using GuiaVegana.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,12 +11,10 @@ namespace GuiaVegana.Controllers
     public class BusinessController : ControllerBase
     {
         private readonly IBusinessRepository _businessRepository;
-        private readonly IMapper _mapper;
 
-        public BusinessController(IBusinessRepository businessRepository, IMapper mapper)
+        public BusinessController(IBusinessRepository businessRepository)
         {
             _businessRepository = businessRepository;
-            _mapper = mapper;
         }
 
         // GET: api/Business
@@ -25,8 +22,7 @@ namespace GuiaVegana.Controllers
         public IActionResult GetAllBusinesses()
         {
             var businesses = _businessRepository.GetAllBusinesses();
-            var businessDtos = _mapper.Map<IEnumerable<BusinessDTO>>(businesses);
-            return Ok(businessDtos);
+            return Ok(businesses); // Ya viene mapeado desde el repositorio
         }
 
         // GET: api/Business/{id}
@@ -38,62 +34,7 @@ namespace GuiaVegana.Controllers
             {
                 return NotFound(new { Message = "Business not found." });
             }
-            var businessDto = _mapper.Map<BusinessDTO>(business);
-            return Ok(businessDto);
-        }
-
-        // GET: api/Business/plant-based
-        [HttpGet("plant-based")]
-        public IActionResult GetPlantBasedBusinesses()
-        {
-            var businesses = _businessRepository.GetPlantBasedBusinesses();
-            var businessDtos = _mapper.Map<IEnumerable<BusinessDTO>>(businesses);
-            return Ok(businessDtos);
-        }
-
-        // GET: api/Business/gluten-free
-        [HttpGet("gluten-free")]
-        public IActionResult GetGlutenFreeBusinesses()
-        {
-            var businesses = _businessRepository.GetGlutenFreeBusinesses();
-            var businessDtos = _mapper.Map<IEnumerable<BusinessDTO>>(businesses);
-            return Ok(businessDtos);
-        }
-
-        // GET: api/Business/open
-        [HttpGet("open")]
-        public IActionResult GetBusinessesOpenNow()
-        {
-            var currentTime = DateTime.Now;
-            var businesses = _businessRepository.GetBusinessesOpenAt(currentTime);
-            var businessDtos = _mapper.Map<IEnumerable<BusinessDTO>>(businesses);
-            return Ok(businessDtos);
-        }
-
-        // GET: api/Business/filter
-        [HttpGet("filter")]
-        public IActionResult GetBusinessesByFilter(
-            [FromQuery] IEnumerable<Rating>? ratings,
-            [FromQuery] IEnumerable<DeliveryType>? deliveries,
-            [FromQuery] IEnumerable<BusinessType>? businessTypes,
-            [FromQuery] IEnumerable<Zone>? zones)
-        {
-            var businesses = _businessRepository.GetAllBusinesses();
-
-            if (ratings != null && ratings.Any())
-                businesses = businesses.Where(b => ratings.Contains(b.Rating));
-
-            if (deliveries != null && deliveries.Any())
-                businesses = businesses.Where(b => deliveries.Contains(b.Delivery));
-
-            if (businessTypes != null && businessTypes.Any())
-                businesses = businesses.Where(b => businessTypes.Contains(b.BusinessType));
-
-            if (zones != null && zones.Any())
-                businesses = businesses.Where(b => zones.Contains(b.Zone));
-
-            var businessDtos = _mapper.Map<IEnumerable<BusinessDTO>>(businesses);
-            return Ok(businessDtos);
+            return Ok(business); // Ya viene mapeado desde el repositorio
         }
 
         // POST: api/Business
@@ -106,11 +47,9 @@ namespace GuiaVegana.Controllers
                 return BadRequest(new { Message = "Invalid business data." });
             }
 
-            var business = _mapper.Map<Business>(businessToCreateDto);
-            _businessRepository.AddBusiness(business);
+            _businessRepository.AddBusiness(businessToCreateDto); // El mapeo ya se hace en el repositorio
 
-            var createdBusinessDto = _mapper.Map<BusinessDTO>(business);
-            return CreatedAtAction(nameof(GetBusinessById), new { id = createdBusinessDto.Id }, createdBusinessDto);
+            return Ok();
         }
 
         // PUT: api/Business
@@ -123,8 +62,7 @@ namespace GuiaVegana.Controllers
                 return BadRequest(new { Message = "Invalid business data." });
             }
 
-            var business = _mapper.Map<Business>(businessDto);
-            _businessRepository.UpdateBusiness(business);
+            _businessRepository.UpdateBusiness(businessDto); // El mapeo ya se hace en el repositorio
 
             return NoContent();
         }

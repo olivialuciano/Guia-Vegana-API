@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using GuiaVegana.Data.Repository.Interfaces;
+﻿using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Entities;
 using GuiaVegana.Models;
-using GuiaVegana.Repositories;
 using GuiaVegana.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +16,11 @@ namespace GuiaVegana.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
         private readonly IConfiguration _config;
 
-        public UserController(IUserRepository userRepository, IMapper mapper, IConfiguration config)
+        public UserController(IUserRepository userRepository, IConfiguration config)
         {
             _userRepository = userRepository;
-            _mapper = mapper;
             _config = config;
         }
 
@@ -38,7 +34,17 @@ namespace GuiaVegana.Controllers
             {
                 return NotFound(new { Message = "User not found." });
             }
-            var userDto = _mapper.Map<UserDTO>(user);
+
+            // Mapeo manual del usuario
+            var userDto = new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                Role = user.Role
+            };
+
             return Ok(userDto);
         }
 
@@ -48,7 +54,17 @@ namespace GuiaVegana.Controllers
         public IActionResult GetAllUsers()
         {
             var users = _userRepository.GetAllUsers();
-            var userDtos = _mapper.Map<IEnumerable<UserDTO>>(users);
+
+            // Mapeo manual de todos los usuarios
+            var userDtos = users.Select(user => new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                Role = user.Role
+            }).ToList();
+
             return Ok(userDtos);
         }
 
@@ -58,7 +74,17 @@ namespace GuiaVegana.Controllers
         public IActionResult GetActiveUsers()
         {
             var users = _userRepository.GetActiveUsers();
-            var userDtos = _mapper.Map<IEnumerable<UserDTO>>(users);
+
+            // Mapeo manual de usuarios activos
+            var userDtos = users.Select(user => new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                Role = user.Role
+            }).ToList();
+
             return Ok(userDtos);
         }
 
@@ -68,7 +94,17 @@ namespace GuiaVegana.Controllers
         public IActionResult GetInactiveUsers()
         {
             var users = _userRepository.GetInactiveUsers();
-            var userDtos = _mapper.Map<IEnumerable<UserDTO>>(users);
+
+            // Mapeo manual de usuarios inactivos
+            var userDtos = users.Select(user => new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                Role = user.Role
+            }).ToList();
+
             return Ok(userDtos);
         }
 
@@ -82,42 +118,60 @@ namespace GuiaVegana.Controllers
                 return BadRequest(new { Message = "Invalid user data." });
             }
 
-            var user = _mapper.Map<User>(userToCreateDto);
+            // Mapeo manual del DTO a entidad User
+            var user = new User
+            {
+                Name = userToCreateDto.Name,
+                Email = userToCreateDto.Email,
+                Password = userToCreateDto.Password,
+                IsActive = userToCreateDto.IsActive,
+                Role = userToCreateDto.Role
+            };
+
             _userRepository.AddUser(user);
 
-            var createdUserDto = _mapper.Map<UserDTO>(user);
+            // Mapeo manual del usuario creado a DTO
+            var createdUserDto = new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                Role = user.Role
+            };
+
             return CreatedAtAction(nameof(GetUserById), new { id = createdUserDto.Id }, createdUserDto);
         }
 
         // POST: api/User/validate
-        [HttpPost("authorization")] //es el login, el usuario inicia sesión.
-        public ActionResult<string> AutenticateUser(AuthenticationRequestBody authenticationRequestBody)
+        [HttpPost("authorization")] // Login
+        public ActionResult<string> AuthenticateUser(AuthenticationRequestBody authenticationRequestBody)
         {
-            //Validamos las credenciales
+            // Validación de credenciales
             var user = _userRepository.ValidateUser(authenticationRequestBody);
             if (user is null)
                 return Unauthorized();
 
-            //Creación el token
+            // Creación del token JWT
             var securityPassword = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]));
             var credentials = new SigningCredentials(securityPassword, SecurityAlgorithms.HmacSha256);
-            
-            var claimsForToken = new List<Claim>();
-            claimsForToken.Add(new Claim("role", user.Role.ToString())); //agregamos el rol como claim para agarrarlo luegoen le front.
+
+            var claimsForToken = new List<Claim>
+            {
+                new Claim("role", user.Role.ToString()) // Agregamos el rol como claim
+            };
 
             var jwtSecurityToken = new JwtSecurityToken(
-             _config["Authentication:Issuer"],
-             _config["Authentication:Audience"],
-             claimsForToken,
-             DateTime.UtcNow,
-             DateTime.UtcNow.AddHours(1),
-             credentials);
+                _config["Authentication:Issuer"],
+                _config["Authentication:Audience"],
+                claimsForToken,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddHours(1),
+                credentials);
 
-            var tokenToReturn = new JwtSecurityTokenHandler() //Pasamos el token a string
-                .WriteToken(jwtSecurityToken);
+            var tokenToReturn = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
             return Ok(tokenToReturn);
-
         }
 
         // PUT: api/User
@@ -130,7 +184,16 @@ namespace GuiaVegana.Controllers
                 return BadRequest(new { Message = "Invalid user data." });
             }
 
-            var user = _mapper.Map<User>(userDto);
+            // Mapeo manual de DTO a entidad User
+            var user = new User
+            {
+                Id = userDto.Id,
+                Name = userDto.Name,
+                Email = userDto.Email,
+                IsActive = userDto.IsActive,
+                Role = userDto.Role
+            };
+
             _userRepository.UpdateUser(user);
 
             return NoContent();

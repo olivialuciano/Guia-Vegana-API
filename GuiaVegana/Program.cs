@@ -5,12 +5,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
-using AutoMapper;
-using GuiaVegana.Profiles;
 using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Data.Repository.Implementations;
 using GuiaVegana.Repositories;
 using GuiaVegana.Repositories.Interfaces;
+using Microsoft.OpenApi.Any;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +24,7 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setupAction =>
 {
+    // Configuración de seguridad existente
     setupAction.AddSecurityDefinition("GuiaVeganaBearerAuth", new OpenApiSecurityScheme()
     {
         Type = SecuritySchemeType.Http,
@@ -46,7 +46,24 @@ builder.Services.AddSwaggerGen(setupAction =>
             new List<string>()
         }
     });
+
+    // Configuración para manejar TimeSpan como string
+    setupAction.MapType<TimeSpan>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "time",
+        Example = new OpenApiString("08:30") // Ejemplo de formato
+    });
+
+    setupAction.MapType<TimeSpan?>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "time",
+        Nullable = true,
+        Example = new OpenApiString("18:45") // Ejemplo de formato
+    });
 });
+
 
 // Configure authentication
 builder.Services.AddAuthentication("Bearer")
@@ -83,8 +100,6 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-// Register AutoMapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();

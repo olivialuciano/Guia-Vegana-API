@@ -1,6 +1,6 @@
-﻿using AutoMapper;
-using GuiaVegana.Data.Repository.Interfaces;
+﻿using GuiaVegana.Data.Repository.Interfaces;
 using GuiaVegana.Entities;
+using GuiaVegana.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,90 +10,42 @@ namespace GuiaVegana.Data.Repository.Implementations
 {
     public class BusinessRepository : IBusinessRepository
     {
-        private GuiaVeganaContext _context;
-        private readonly IMapper _mapper;
+        private readonly GuiaVeganaContext _context;
 
-        public BusinessRepository(GuiaVeganaContext context, IMapper mapper)
+        public BusinessRepository(GuiaVeganaContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         // Métodos GET
 
         // 1. Traer todos los negocios
-        public IEnumerable<Business> GetAllBusinesses()
-        {
-            return _context.Businesses.Include(b => b.OpeningHours).Include(b => b.VeganOptions).ToList();
-        }
-
-        // 2. Traer un negocio por ID
-        public Business GetBusinessById(int id)
+        public IEnumerable<BusinessDTO> GetAllBusinesses()
         {
             return _context.Businesses
                 .Include(b => b.OpeningHours)
                 .Include(b => b.VeganOptions)
-                .FirstOrDefault(b => b.Id == id);
+                .ToList()
+                .Select(MapToBusinessDTO);
         }
 
-        // 3. Filtrar por calificaciones
-        public IEnumerable<Business> GetBusinessesByRatings(IEnumerable<Rating> ratings)
+        // 2. Traer un negocio por ID
+        public BusinessDTO GetBusinessById(int id)
         {
-            return _context.Businesses.Where(b => ratings.Contains(b.Rating)).ToList();
-        }
-
-        // 4. Filtrar por tipos de delivery
-        public IEnumerable<Business> GetBusinessesByDeliveries(IEnumerable<DeliveryType> deliveries)
-        {
-            return _context.Businesses.Where(b => deliveries.Contains(b.Delivery)).ToList();
-        }
-
-        // 5. Filtrar por tipos de negocio
-        public IEnumerable<Business> GetBusinessesByTypes(IEnumerable<BusinessType> businessTypes)
-        {
-            return _context.Businesses.Where(b => businessTypes.Contains(b.BusinessType)).ToList();
-        }
-
-        // 6. Filtrar por zonas
-        public IEnumerable<Business> GetBusinessesByZones(IEnumerable<Zone> zones)
-        {
-            return _context.Businesses.Where(b => zones.Contains(b.Zone)).ToList();
-        }
-
-        // 7. Traer negocios totalmente basados en plantas
-        public IEnumerable<Business> GetPlantBasedBusinesses()
-        {
-            return _context.Businesses.Where(b => b.AllPlantBased).ToList();
-        }
-
-        // 8. Traer negocios con opciones gluten-free
-        public IEnumerable<Business> GetGlutenFreeBusinesses()
-        {
-            return _context.Businesses.Where(b => b.GlutenFree).ToList();
-        }
-
-        // 9. Traer negocios abiertos en el momento actual
-        public IEnumerable<Business> GetBusinessesOpenAt(DateTime currentTime)
-        {
-            return _context.Businesses
+            var business = _context.Businesses
                 .Include(b => b.OpeningHours)
-                .Where(b => b.OpeningHours.Any(oh =>
-                    (oh.Day == currentTime.DayOfWeek &&
-                     oh.OpenTime1 <= currentTime.TimeOfDay &&
-                     oh.CloseTime1 >= currentTime.TimeOfDay) ||
-                    (oh.Day == currentTime.DayOfWeek &&
-                     oh.OpenTime2.HasValue &&
-                     oh.CloseTime2.HasValue &&
-                     oh.OpenTime2.Value <= currentTime.TimeOfDay &&
-                     oh.CloseTime2.Value >= currentTime.TimeOfDay)))
-                .ToList();
+                .Include(b => b.VeganOptions)
+                .FirstOrDefault(b => b.Id == id);
+
+            return business != null ? MapToBusinessDTO(business) : null;
         }
 
         // Métodos POST
 
         // 10. Agregar un nuevo negocio
-        public void AddBusiness(Business business)
+        public void AddBusiness(BusinessToCreateDTO businessDTO)
         {
+            var business = MapToBusinessEntity(businessDTO);
             _context.Businesses.Add(business);
             _context.SaveChanges();
         }
@@ -101,8 +53,9 @@ namespace GuiaVegana.Data.Repository.Implementations
         // Métodos PUT
 
         // 11. Actualizar datos de un negocio existente
-        public void UpdateBusiness(Business business)
+        public void UpdateBusiness(BusinessDTO businessDTO)
         {
+            var business = MapToBusinessEntity(businessDTO);
             _context.Businesses.Update(business);
             _context.SaveChanges();
         }
@@ -118,6 +71,69 @@ namespace GuiaVegana.Data.Repository.Implementations
                 _context.Businesses.Remove(business);
                 _context.SaveChanges();
             }
+        }
+
+        // Métodos privados para mapear manualmente
+        private BusinessDTO MapToBusinessDTO(Business business)
+        {
+            return new BusinessDTO
+            {
+                Id = business.Id,
+                Name = business.Name,
+                Image = business.Image,
+                SocialMediaUsername = business.SocialMediaUsername,
+                SocialMediaLink = business.SocialMediaLink,
+                Address = business.Address,
+                Zone = business.Zone,
+                Delivery = business.Delivery,
+                GlutenFree = business.GlutenFree,
+                AllPlantBased = business.AllPlantBased,
+                Rating = business.Rating,
+                BusinessType = business.BusinessType,
+                LastUpdate = business.LastUpdate,
+                UserId = business.UserId
+            };
+        }
+
+        private Business MapToBusinessEntity(BusinessToCreateDTO businessDTO)
+        {
+            return new Business
+            {
+                Name = businessDTO.Name,
+                Image = businessDTO.Image,
+                SocialMediaUsername = businessDTO.SocialMediaUsername,
+                SocialMediaLink = businessDTO.SocialMediaLink,
+                Address = businessDTO.Address,
+                Zone = businessDTO.Zone,
+                Delivery = businessDTO.Delivery,
+                GlutenFree = businessDTO.GlutenFree,
+                AllPlantBased = businessDTO.AllPlantBased,
+                Rating = businessDTO.Rating,
+                BusinessType = businessDTO.BusinessType,
+                UserId = businessDTO.UserId,
+                LastUpdate = DateTime.Now
+            };
+        }
+
+        private Business MapToBusinessEntity(BusinessDTO businessDTO)
+        {
+            return new Business
+            {
+                Id = businessDTO.Id,
+                Name = businessDTO.Name,
+                Image = businessDTO.Image,
+                SocialMediaUsername = businessDTO.SocialMediaUsername,
+                SocialMediaLink = businessDTO.SocialMediaLink,
+                Address = businessDTO.Address,
+                Zone = businessDTO.Zone,
+                Delivery = businessDTO.Delivery,
+                GlutenFree = businessDTO.GlutenFree,
+                AllPlantBased = businessDTO.AllPlantBased,
+                Rating = businessDTO.Rating,
+                BusinessType = businessDTO.BusinessType,
+                UserId = businessDTO.UserId,
+                LastUpdate = businessDTO.LastUpdate
+            };
         }
     }
 }
