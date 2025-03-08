@@ -45,7 +45,10 @@ namespace GuiaVegana.Data.Repository.Implementations
 
         public User? ValidateUser(AuthenticationRequestBody authRequestBody)
         {
-            return _context.Users.FirstOrDefault(p => p.Email == authRequestBody.Email && p.Password == authRequestBody.Password);
+            return _context.Users.FirstOrDefault(p =>
+                p.Email == authRequestBody.Email &&
+                p.Password == authRequestBody.Password &&
+                p.IsActive); // Solo usuarios activos
         }
 
         // Métodos PUT

@@ -149,17 +149,19 @@ namespace GuiaVegana.Controllers
         {
             // Validación de credenciales
             var user = _userRepository.ValidateUser(authenticationRequestBody);
+
             if (user is null)
-                return Unauthorized();
+                return Unauthorized("Invalid credentials or user is not active.");
 
             // Creación del token JWT
             var securityPassword = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["Authentication:SecretForKey"]));
             var credentials = new SigningCredentials(securityPassword, SecurityAlgorithms.HmacSha256);
 
             var claimsForToken = new List<Claim>
-            {
-                new Claim("role", user.Role.ToString()) // Agregamos el rol como claim
-            };
+    {
+        new Claim("role", user.Role.ToString()),
+        new Claim("userId", user.Id.ToString()) // Agregamos el userId como claim
+    };
 
             var jwtSecurityToken = new JwtSecurityToken(
                 _config["Authentication:Issuer"],
