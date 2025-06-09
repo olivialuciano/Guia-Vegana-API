@@ -10,6 +10,8 @@ using GuiaVegana.Data.Repository.Implementations;
 using GuiaVegana.Repositories;
 using GuiaVegana.Repositories.Interfaces;
 using Microsoft.OpenApi.Any;
+using GuiaVegana.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,10 +80,10 @@ builder.Services.AddAuthentication("Bearer")
             ValidAudience = builder.Configuration["Authentication:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"])
-            )
+            ),
+            NameClaimType = ClaimTypes.NameIdentifier // ?? Usar el ID como "user.Identity.Name"
         };
 
-        // Add role claims from token
         options.Events = new JwtBearerEvents
         {
             OnTokenValidated = context =>
@@ -89,7 +91,15 @@ builder.Services.AddAuthentication("Bearer")
                 var identity = context.Principal.Identity as ClaimsIdentity;
                 if (identity != null)
                 {
-                    var roleClaim = context.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+                    // Asegura que el claim de ID está presente
+                    var idClaim = context.Principal.FindFirst(ClaimTypes.NameIdentifier);
+                    if (idClaim != null)
+                    {
+                        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, idClaim.Value));
+                    }
+
+                    // Si querés, podés seguir agregando roles desde el token:
+                    var roleClaim = context.Principal.FindFirst(ClaimTypes.Role);
                     if (roleClaim != null)
                     {
                         identity.AddClaim(new Claim(ClaimTypes.Role, roleClaim.Value));
