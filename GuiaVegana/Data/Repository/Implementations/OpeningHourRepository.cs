@@ -69,18 +69,7 @@ namespace GuiaVegana.Data.Repository.Implementations
         // POST: Add a new opening hour
         public void Add(OpeningHourToCreateDTO openingHourToCreate)
         {
-            if (openingHourToCreate.OpenTime1 >= openingHourToCreate.CloseTime1)
-            {
-                throw new ArgumentException("OpenTime1 debe ser menor que CloseTime1.");
-            }
-            if (openingHourToCreate.OpenTime2.HasValue && openingHourToCreate.CloseTime2.HasValue)
-            {
-                if (openingHourToCreate.OpenTime2 >= openingHourToCreate.CloseTime2)
-                {
-                    throw new ArgumentException("OpenTime2 debe ser menor que CloseTime2.");
-                }
-            }
-
+            
             var openingHour = new OpeningHour
             {
                 Day = openingHourToCreate.Day,
